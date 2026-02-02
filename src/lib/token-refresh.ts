@@ -100,9 +100,12 @@ export async function getValidAccessToken(
     return { success: false, needsReauth: true };
   }
 
-  // GitHub tokens typically don't expire (unless revoked)
-  if (provider === "github" && account.access_token) {
-    return { success: true, accessToken: account.access_token };
+  // GitHub tokens are stored in refresh_token field (GitHub doesn't use traditional refresh tokens)
+  if (provider === "github") {
+    const token = account.access_token || account.refresh_token;
+    if (token) {
+      return { success: true, accessToken: token };
+    }
   }
 
   // GitLab tokens expire and need refresh

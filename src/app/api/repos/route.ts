@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         needsReauth: false,
       };
 
-      if (account.provider === "github" && account.access_token) {
+      if (account.provider === "github" && (account.access_token || account.refresh_token)) {
         accountInfo = await getAccountInfoWithRefresh(session.user.id, account.id, "github");
         if (accountInfo.needsReauth) {
           accountsNeedingReauth.add(account.id);
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
             });
           });
         }
-      } else if (account.provider === "gitlab" && account.access_token) {
+      } else if (account.provider === "gitlab" && (account.access_token || account.refresh_token)) {
         accountInfo = await getAccountInfoWithRefresh(session.user.id, account.id, "gitlab");
         if (accountInfo.needsReauth) {
           accountsNeedingReauth.add(account.id);
