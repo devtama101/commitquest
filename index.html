@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CommitQuest - Level Up Your Git Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Los Lunas inspired palette */
+      --sky-top: #87CEEB;
+      --sky-bottom: #FFB347;
+      --sand: #F4D03F;
+      --sand-dark: #E8B923;
+      --teal: #20B2AA;
+      --teal-dark: #178F89;
+      --orange: #FF6B35;
+      --orange-dark: #E55A2B;
+      --cream: #FFF8E7;
+      --dark: #2D3436;
+      --purple: #9B59B6;
+      --green: #2ECC71;
+      --blue: #3498DB;
+      
+      /* Typography */
+      --font-display: 'Bangers', cursive;
+      --font-body: 'Comic Neue', cursive;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ============ NAVBAR ============ */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 3px solid var(--dark);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--orange);
+      text-shadow: 2px 2px 0 var(--dark);
+      letter-spacing: 2px;
+    }
+
+    .logo span {
+      color: var(--teal);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-body);
+      font-weight: 700;
+      color: var(--dark);
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .btn {
+      font-family: var(--font-body);
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border: 3px solid var(--dark);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: white;
+      box-shadow: 4px 4px 0 var(--dark);
+    }
+
+    .btn-primary:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--dark);
+    }
+
+    .btn-secondary {
+      background: var(--teal);
+      color: white;
+      box-shadow: 4px 4px 0 var(--dark);
+    }
+
+    .btn-github {
+      background: #333;
+      color: white;
+      box-shadow: 4px 4px 0 var(--dark);
+    }
+
+    .btn-gitlab {
+      background: #FC6D26;
+      color: white;
+      box-shadow: 4px 4px 0 var(--dark);
+    }
+
+    /* ============ HERO SECTION ============ */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%);
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--purple);
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      border: 3px solid var(--dark);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      box-shadow: 3px 3px 0 var(--dark);
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      color: var(--cream);
+      text-shadow: 
+        4px 4px 0 var(--dark),
+        -2px -2px 0 var(--dark),
+        2px -2px 0 var(--dark),
+        -2px 2px 0 var(--dark);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: 3px;
+    }
+
+    .hero h1 span {
+      color: var(--sand);
+    }
+
+    .hero-subtitle {
+      font-size: 1.5rem;
+      color: var(--dark);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-weight: 700;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-illustration {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .character-card {
+      background: var(--cream);
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      padding: 1.5rem;
+      width: 150px;
+      text-align: center;
+      box-shadow: 6px 6px 0 var(--dark);
+      transform: rotate(-2deg);
+      transition: transform 0.3s;
+    }
+
+    .character-card:nth-child(2) {
+      transform: rotate(2deg);
+    }
+
+    .character-card:nth-child(3) {
+      transform: rotate(-1deg);
+    }
+
+    .character-card:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    .character-avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--teal);
+      border: 3px solid var(--dark);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .character-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--dark);
+    }
+
+    .character-title {
+      font-size: 0.85rem;
+      color: var(--teal-dark);
+      font-weight: 700;
+    }
+
+    /* Wavy divider */
+    .wave-divider {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .wave-divider svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 80px;
+    }
+
+    /* ============ STATS SECTION ============ */
+    .stats-section {
+      background: var(--sand);
+      padding: 5rem 2rem;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      text-align: center;
+      color: var(--dark);
+      margin-bottom: 3rem;
+      text-shadow: 2px 2px 0 var(--cream);
+      letter-spacing: 2px;
+    }
+
+    .stats-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .stat-card {
+      background: var(--cream);
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 6px 6px 0 var(--dark);
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--orange);
+      text-shadow: 2px 2px 0 var(--dark);
+    }
+
+    .stat-label {
+      font-weight: 700;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+
+    /* ============ ACHIEVEMENTS SECTION ============ */
+    .achievements-section {
+      background: var(--teal);
+      padding: 5rem 2rem;
+      position: relative;
+    }
+
+    .achievements-section .section-title {
+      color: var(--cream);
+      text-shadow: 3px 3px 0 var(--dark);
+    }
+
+    .achievements-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .achievement-card {
+      background: var(--cream);
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 5px 5px 0 var(--dark);
+      transition: all 0.2s;
+    }
+
+    .achievement-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 var(--dark);
+    }
+
+    .achievement-card.locked {
+      opacity: 0.7;
+      filter: grayscale(50%);
+    }
+
+    .achievement-icon {
+      width: 70px;
+      height: 70px;
+      background: var(--sand);
+      border: 3px solid var(--dark);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .achievement-card.legendary .achievement-icon {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .achievement-card.epic .achievement-icon {
+      background: linear-gradient(135deg, #9B59B6, #8E44AD);
+    }
+
+    .achievement-card.rare .achievement-icon {
+      background: linear-gradient(135deg, var(--blue), #2980B9);
+    }
+
+    .achievement-info h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .achievement-info p {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-rarity {
+      display: inline-block;
+      padding: 0.2rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .rarity-common { background: #95A5A6; color: white; }
+    .rarity-rare { background: var(--blue); color: white; }
+    .rarity-epic { background: var(--purple); color: white; }
+    .rarity-legendary { background: linear-gradient(90deg, #FFD700, #FFA500); color: var(--dark); }
+
+    /* ============ FEATURES SECTION ============ */
+    .features-section {
+      background: var(--cream);
+      padding: 5rem 2rem;
+    }
+
+    .features-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 6px 6px 0 var(--dark);
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--teal-dark);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    /* ============ CTA SECTION ============ */
+    .cta-section {
+      background: linear-gradient(180deg, var(--orange) 0%, var(--orange-dark) 100%);
+      padding: 5rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      color: var(--cream);
+      text-shadow: 3px 3px 0 var(--dark);
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+    }
+
+    .cta-section p {
+      font-size: 1.3rem;
+      color: var(--cream);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-weight: 700;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-buttons .btn {
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+    }
+
+    /* ============ FOOTER ============ */
+    .footer {
+      background: var(--dark);
+      color: var(--cream);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--orange);
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo span {
+      color: var(--teal);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .footer-links a:hover {
+      color: var(--orange);
+    }
+
+    .footer-copy {
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+
+    /* ============ HEATMAP PREVIEW ============ */
+    .heatmap-section {
+      background: var(--sand);
+      padding: 5rem 2rem;
+    }
+
+    .heatmap-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--cream);
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 8px 8px 0 var(--dark);
+    }
+
+    .heatmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .heatmap-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+    }
+
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid var(--dark);
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(52, 1fr);
+      gap: 3px;
+    }
+
+    .heatmap-cell {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .level-0 { background: #ebedf0; }
+    .level-1 { background: #9be9a8; }
+    .level-2 { background: #40c463; }
+    .level-3 { background: #30a14e; }
+    .level-4 { background: #216e39; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .section-title {
+        font-size: 2.2rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-section h2 {
+        font-size: 2.5rem;
+      }
+
+      .heatmap-grid {
+        grid-template-columns: repeat(26, 1fr);
+      }
+    }
+
+    /* ============ ANIMATIONS ============ */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Streak fire animation */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .streak-fire {
+      animation: flicker 0.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">Commit<span>Quest</span></div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#achievements">Achievements</a></li>
+      <li><a href="#stats">Stats</a></li>
+    </ul>
+    <a href="#" class="btn btn-primary">Start Quest</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🎮 Gamify Your Git</div>
+      <h1>LEVEL UP YOUR<br><span>COMMIT GAME</span></h1>
+      <p class="hero-subtitle">
+        Track your commits, build streaks, unlock achievements. 
+        Turn your coding journey into an epic adventure!
+      </p>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-github">
+          <span>🐙</span> Continue with GitHub
+        </a>
+        <a href="#" class="btn btn-gitlab">
+          <span>🦊</span> Continue with GitLab
+        </a>
+      </div>
+      
+      <div class="hero-illustration">
+        <div class="character-card floating" style="animation-delay: 0s;">
+          <div class="character-avatar">🔥</div>
+          <div class="character-name">Streak Master</div>
+          <div class="character-title">30-Day Legend</div>
+        </div>
+        <div class="character-card floating" style="animation-delay: 0.5s;">
+          <div class="character-avatar">🦉</div>
+          <div class="character-name">Night Owl</div>
+          <div class="character-title">Midnight Coder</div>
+        </div>
+        <div class="character-card floating" style="animation-delay: 1s;">
+          <div class="character-avatar">🏆</div>
+          <div class="character-name">1K Club</div>
+          <div class="character-title">Commit Legend</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wave-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" fill="#F4D03F"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section class="stats-section" id="stats">
+    <h2 class="section-title">📊 YOUR QUEST STATS</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value">24</div>
+        <div class="stat-label">Today's Commits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon streak-fire">🔥</div>
+        <div class="stat-value">47</div>
+        <div class="stat-label">Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💻</div>
+        <div class="stat-value">1,842</div>
+        <div class="stat-label">Total Commits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-value">12</div>
+        <div class="stat-label">Achievements</div>
+      </div>
+    </div>
+    
+    <div class="wave-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" fill="#20B2AA"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- HEATMAP SECTION -->
+  <section class="heatmap-section">
+    <h2 class="section-title">📅 COMMIT CALENDAR</h2>
+    <div class="heatmap-container">
+      <div class="heatmap-header">
+        <h3>Your Contribution Graph</h3>
+        <div class="heatmap-legend">
+          <span>Less</span>
+          <div class="legend-box level-0"></div>
+          <div class="legend-box level-1"></div>
+          <div class="legend-box level-2"></div>
+          <div class="legend-box level-3"></div>
+          <div class="legend-box level-4"></div>
+          <span>More</span>
+        </div>
+      </div>
+      <div class="heatmap-grid" id="heatmap">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+    
+    <div class="wave-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" fill="#20B2AA"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS SECTION -->
+  <section class="achievements-section" id="achievements">
+    <h2 class="section-title">🏆 ACHIEVEMENTS</h2>
+    <div class="achievements-grid">
+      <div class="achievement-card legendary">
+        <div class="achievement-icon">👑</div>
+        <div class="achievement-info">
+          <h3>Centurion</h3>
+          <p>100-day commit streak</p>
+          <span class="achievement-rarity rarity-legendary">Legendary</span>
+        </div>
+      </div>
+      
+      <div class="achievement-card epic">
+        <div class="achievement-icon">🏆</div>
+        <div class="achievement-info">
+          <h3>Thousand Club</h3>
+          <p>1000 total commits</p>
+          <span class="achievement-rarity rarity-epic">Epic</span>
+        </div>
+      </div>
+      
+      <div class="achievement-card rare">
+        <div class="achievement-icon">🦉</div>
+        <div class="achievement-info">
+          <h3>Night Owl</h3>
+          <p>Commit between midnight and 5am</p>
+          <span class="achievement-rarity rarity-rare">Rare</span>
+        </div>
+      </div>
+      
+      <div class="achievement-card">
+        <div class="achievement-icon">🔥</div>
+        <div class="achievement-info">
+          <h3>Week Warrior</h3>
+          <p>7-day commit streak</p>
+          <span class="achievement-rarity rarity-common">Common</span>
+        </div>
+      </div>
+      
+      <div class="achievement-card">
+        <div class="achievement-icon">💯</div>
+        <div class="achievement-info">
+          <h3>Century</h3>
+          <p>100 total commits</p>
+          <span class="achievement-rarity rarity-common">Common</span>
+        </div>
+      </div>
+      
+      <div class="achievement-card locked">
+        <div class="achievement-icon">🔒</div>
+        <div class="achievement-info">
+          <h3>???</h3>
+          <p>Keep committing to unlock!</p>
+          <span class="achievement-rarity rarity-common">Locked</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wave-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" fill="#FFF8E7"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features-section" id="features">
+    <h2 class="section-title">⚡ QUEST FEATURES</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>🔄 Real-time Tracking</h3>
+        <p>Webhooks capture every commit instantly. Push to GitHub or GitLab and watch your stats update in real-time!</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌐 Multi-Platform</h3>
+        <p>Connect both GitHub and GitLab accounts. Track all your repositories in one epic dashboard.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🎮 Achievement System</h3>
+        <p>Unlock badges as you code. From "First Blood" to "Legendary Centurion" - collect them all!</p>
+      </div>
+      <div class="feature-card">
+        <h3>📈 Streak Power</h3>
+        <p>Build your daily commit streak. Don't break the chain and become a coding legend!</p>
+      </div>
+    </div>
+    
+    <div class="wave-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.1,118.92,156.63,69.08,321.39,56.44Z" fill="#FF6B35"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <h2>BEGIN YOUR QUEST</h2>
+    <p>Join thousands of developers leveling up their coding game. It's free and takes 30 seconds!</p>
+    <div class="cta-buttons">
+      <a href="#" class="btn btn-github">
+        🐙 Start with GitHub
+      </a>
+      <a href="#" class="btn btn-gitlab">
+        🦊 Start with GitLab
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">Commit<span>Quest</span></div>
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">GitHub</a>
+    </div>
+    <p class="footer-copy">© 2025 CommitQuest. Made with 🔥 and lots of commits.</p>
+  </footer>
+
+  <script>
+    // Generate random heatmap
+    const heatmap = document.getElementById('heatmap');
+    const weeks = 52;
+    const days = 7;
+    
+    for (let w = 0; w < weeks; w++) {
+      for (let d = 0; d < days; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        
+        // Random level with weighted probability
+        const rand = Math.random();
+        let level;
+        if (rand < 0.3) level = 0;
+        else if (rand < 0.5) level = 1;
+        else if (rand < 0.7) level = 2;
+        else if (rand < 0.9) level = 3;
+        else level = 4;
+        
+        cell.classList.add(`level-${level}`);
+        heatmap.appendChild(cell);
+      }
+    }
+  </script>
+</body>
+</html>

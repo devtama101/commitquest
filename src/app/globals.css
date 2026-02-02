@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  /* Define colors for Tailwind utilities */
+  --color-cream: #fff8e7;
+  --color-dark: #2d3436;
+  --color-sky-top: #8ad4eb;
+  --color-sky-bottom: #fdb171;
+  --color-sand: #f6d653;
+  --color-sand-dark: #eabf3a;
+  --color-teal: #24b6a1;
+  --color-teal-dark: #009683;
+  --color-orange: #fa6a57;
+  --color-orange-dark: #dd503f;
+  --color-purple: #9b59b6;
+  --color-purple-dark: #8e44ad;
+  --color-green: #27ae60;
+  --color-blue: #3498db;
+
+  /* Heatmap colors */
+  --color-heat-0: #ebedf0;
+  --color-heat-1: #9be9a8;
+  --color-heat-2: #40c463;
+  --color-heat-3: #30a14e;
+  --color-heat-4: #216e39;
+
+  /* Font families */
+  --font-display: "Bangers", cursive;
+  --font-body: "Comic Neue", sans-serif;
+}
+
+/* Base styles */
+* {
+  border-color: #2d3436;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  background-color: #fff8e7;
+  color: #2d3436;
+  font-family: "Comic Neue", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Bangers", cursive;
+}
+
+/* Text shadow utilities */
+.text-shadow-sm {
+  text-shadow: 2px 2px 0 #2d3436;
+}
+
+.text-shadow-md {
+  text-shadow: 3px 3px 0 #2d3436;
+}
+
+.text-shadow-lg {
+  text-shadow: 4px 4px 0 #2d3436;
+}
+
+.text-shadow-outline {
+  text-shadow:
+    4px 4px 0 #2d3436,
+    -2px -2px 0 #2d3436,
+    2px -2px 0 #2d3436,
+    -2px 2px 0 #2d3436;
+}
+
+/* Border width utilities - Tailwind doesn't have border-3 by default */
+.border-3 {
+  border-width: 3px;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-flicker {
+  animation: flicker 0.5s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s ease-in-out infinite;
+}

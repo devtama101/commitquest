@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTH ====================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  repos         TrackedRepo[]
+  commits       Commit[]
+  achievements  UserAchievement[]
+  stats         UserStats?
+  userLevel     UserLevel?
+  profile       Profile?
+  userTitles    UserTitle[]
+  challenges    UserChallenge[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==================== REPOS ====================
+
+model TrackedRepo {
+  id            String   @id @default(cuid())
+  userId        String
+  accountId      String?  // OAuth account ID (to support multiple accounts per platform)
+  provider      String   // "github" | "gitlab"
+  repoId        String   // external repo ID
+  repoName      String   // "owner/repo"
+  repoUrl       String
+  webhookId     String?  // external webhook ID
+  webhookSecret String?  // secret for verifying webhooks
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commits Commit[]
+
+  @@unique([userId, provider, repoId])
+  @@index([userId])
+}
+
+// ==================== COMMITS ====================
+
+model Commit {
+  id          String   @id @default(cuid())
+  userId      String
+  repoId      String
+  provider    String
+  sha         String   // full commit SHA
+  message     String
+  committedAt DateTime
+  receivedAt  DateTime @default(now())
+  branch      String?
+  additions   Int?
+  deletions   Int?
+
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, sha])
+  @@index([userId, committedAt])
+  @@index([repoId])
+}
+
+// ==================== ACHIEVEMENTS ====================
+
+model Achievement {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  icon        String   // emoji
+  category    String   // "streak" | "volume" | "time" | "special"
+  threshold   Int      // required value for unlock
+  rarity      String   @default("common") // "common" | "rare" | "epic" | "legendary"
+  xpReward    Int      @default(10) // XP awarded for unlocking
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+// ==================== STATS (CACHED) ====================
+
+model UserStats {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  totalCommits   Int       @default(0)
+  lastCommitDate DateTime?
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==================== XP & LEVELING ====================
+
+model UserLevel {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  level     Int      @default(1)
+  xp        Int      @default(0)
+  totalXp   Int      @default(0)
+  title     String?  // Unlocked title
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserTitle {
+  id         String   @id @default(cuid())
+  userId     String
+  titleId    String   // References predefined titles
+  unlockedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+}
+
+// ==================== PUBLIC PROFILES ====================
+
+model Profile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  bio                String?
+  location           String?
+  website            String?
+  showActivity       Boolean  @default(true)
+  showStats          Boolean  @default(true)
+  showAchievements   Boolean  @default(true)
+  customTheme        String?  // "dark", "retro", etc
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==================== CHALLENGES ====================
+
+model Challenge {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  type        String   // "daily" | "weekly" | "special"
+  goal        Int      // target number
+  rewardXp    Int      // XP reward
+  icon        String   // emoji
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  userChallenges UserChallenge[]
+}
+
+model UserChallenge {
+  id          String     @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int        @default(0)
+  completed   Boolean    @default(false)
+  completedAt DateTime?
+  claimedAt   DateTime?  // When reward was claimed
+  createdAt   DateTime   @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+}
