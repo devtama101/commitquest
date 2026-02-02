@@ -7,9 +7,9 @@ SSH into your VPS and run:
 ~/commitquest/deploy.sh
 ```
 
-Or do it manually:
+Or from your local machine:
 ```bash
-ssh -i ~/.ssh/id_ed25519 tamatopik@103.189.234.117
+ssh webartisan
 cd ~/commitquest && ./deploy.sh
 ```
 
@@ -24,12 +24,14 @@ cd ~/commitquest && ./deploy.sh
 ## Access the App
 
 - **URL**: https://commitquest.webartisan.id
-- **VPS IP**: 103.189.234.117
-- **SSH**: `ssh -i ~/.ssh/id_ed25519 tamatopik@103.189.234.117`
+- **SSH**: `ssh webartisan` (uses ~/.ssh/config alias)
 
 ## Container Management
 
 ```bash
+# SSH into VPS
+ssh webartisan
+
 # View all containers
 cd ~/commitquest && docker compose ps
 
@@ -65,3 +67,14 @@ Located in `~/commitquest/.env`:
 - `WEBHOOK_BASE_URL` - https://commitquest.webartisan.id
 - `AUTH_GITHUB_ID/SECRET` - GitHub OAuth
 - `AUTH_GITLAB_ID/SECRET` - GitLab OAuth
+
+## SSH Config (on your local machine)
+
+Located at `~/.ssh/config`:
+```
+Host webartisan
+    HostName 103.189.234.117
+    User tamatopik
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+```
