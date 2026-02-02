@@ -15,11 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitLab({
       clientId: process.env.AUTH_GITLAB_ID!,
       clientSecret: process.env.AUTH_GITLAB_SECRET!,
-      authorization: {
-        params: {
-          scope: "read_user read_api",
-        },
-      },
+      authorization: "https://gitlab.com/oauth/authorize?scope=read_user+read_api",
     }),
     Credentials({
       name: "credentials",
