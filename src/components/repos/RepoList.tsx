@@ -433,7 +433,7 @@ function AddRepoModal({ onRepoAdded, needsReauth }: { onRepoAdded: () => void | 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/50">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark/50">
       <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <div className="p-6 border-b-4 border-dark">
           <div className="flex justify-between items-center mb-4">
