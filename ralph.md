@@ -1,6 +1,7 @@
 # CommitQuest - Project Documentation (Current State)
 
 **Repository**: https://github.com/devtama101/commitquest
+**Live**: https://commitquest.webartisan.id
 
 ## 📋 Overview
 
@@ -25,6 +26,7 @@ A gamified Git commit tracker where developers connect GitHub/GitLab, track comm
 ### Platform Features
 - **Multi-Account**: Connect unlimited GitHub + GitLab accounts
 - **Auto Token Refresh**: GitLab tokens refresh automatically when expired
+- **GitLab read_api Scope**: Properly configured for repo fetching
 - **Real-time Webhooks**: Commits captured instantly via webhooks
 - **Public Profiles**: Share progress at `/u/[username]`
 - **Badge Embeds**: Add stats to GitHub README
@@ -38,11 +40,12 @@ A gamified Git commit tracker where developers connect GitHub/GitLab, track comm
 | **React** | 19.0 | Server Components |
 | **Language** | TypeScript 5.x | - |
 | **Styling** | Tailwind CSS 4.0 | CSS-first with @theme |
-| **Database** | PostgreSQL | via Prisma 6.1 |
+| **Database** | PostgreSQL (prod) | via Prisma 6.1 |
 | **ORM** | Prisma 6.1 | - |
 | **Auth** | Auth.js v5 | next-auth@5 |
 | **Charts** | Recharts 2.15 | - |
 | **Fonts** | Bangers + Comic Neue | Google Fonts |
+| **Deployment** | Docker Compose | + Caddy (auto SSL) |
 
 ## 📁 Project Structure
 
@@ -71,6 +74,8 @@ commitquest/
 │   │   ├── repos/                   # Repositories page
 │   │   ├── settings/                # Settings page (tabbed)
 │   │   ├── u/[username]/            # Public profiles
+│   │   ├── icon.svg                 # Favicon
+│   │   ├── favicon.ico              # Favicon
 │   │   ├── layout.tsx               # Root layout
 │   │   └── page.tsx                 # Landing page
 │   ├── components/
@@ -92,8 +97,10 @@ commitquest/
 │       ├── webhooks.ts              # Webhook utilities
 │       └── xp.ts                   # XP & leveling system
 ├── prisma/
-│   ├── schema.prisma                # Database schema
+│   ├── schema.prisma                # Database schema (PostgreSQL)
 │   └── seed.ts                     # Seed achievements & challenges
+├── Dockerfile                       # Docker config for production
+├── docker-compose.yml               # Docker compose for VPS
 └── package.json
 ```
 
@@ -112,9 +119,9 @@ NEXTAUTH_URL="http://localhost:3000"
 AUTH_GITHUB_ID="your_github_client_id"
 AUTH_GITHUB_SECRET="your_github_client_secret"
 
-# GitLab OAuth
+# GitLab OAuth (with read_api scope)
 AUTH_GITLAB_ID="your_gitlab_app_id"
-AUTH_GITLAB_SECRET="your_gitlab_secret"
+AUTH_GITLAB_SECRET="your_gitlab_app_secret"
 
 # Webhooks (public URL in production)
 WEBHOOK_BASE_URL="http://localhost:3000"
@@ -197,14 +204,14 @@ WEBHOOK_BASE_URL="http://localhost:3000"
 **Colors:**
 - `--color-cream`: #fff8e7 (background)
 - `--color-dark`: #2d3436 (text/borders)
-- `--color-sand`: #f6d653
-- `--color-teal`: #24b6a1
-- `--color-orange`: #fa6a57
+- `--color-orange`: #f97316 (accent)
+- Heatmap colors: `bg-heat-0` through `bg-heat-4`
 
 **Component Styling:**
 - Cards: `bg-cream border-4 border-dark rounded-2xl shadow-[6px_6px_0_var(--color-dark)]`
 - Buttons: `border-3 border-dark rounded-full shadow-[4px_4px_0_var(--color-dark)]`
 - Tabs: `bg-cream rounded-full border-2 border-dark`
+- Modals: `z-[999]` (above navbar at `z-40`)
 
 ## 🚀 Development
 
@@ -225,13 +232,35 @@ npm run build
 npm start
 ```
 
+## 🚀 Production Deployment
+
+**CI/CD**: GitHub Actions auto-deploys on push to `main`
+- Build time: ~2 minutes
+- Deploy time: ~1 minute
+- Total: ~3-4 minutes
+
+**Manual deploy**:
+```bash
+ssh webartisan
+cd ~/commitquest && ./deploy.sh
+```
+
+## 📝 Recent Updates
+
+- **GitLab read_api scope**: Fixed repo fetching by adding `read_api` to OAuth authorization URL
+- **Favicon**: Added custom sword/quest-themed favicon
+- **Modal z-index**: Fixed overlapping issues (modals: z-[999], navbar: z-40)
+- **Token refresh**: GitLab tokens auto-refresh when expired
+- **Multiple accounts**: Support connecting multiple GitHub/GitLab accounts
+
 ## 📝 Notes
 
-- **Token Refresh**: GitLab tokens refresh automatically using the refresh token
+- **Token Refresh**: GitLab tokens refresh automatically using the refresh token flow
 - **Re-auth Warning**: Users see a warning banner when token refresh fails
 - **Multiple Accounts**: Users can connect multiple GitHub and GitLab accounts
 - **Public Profiles**: Each user has a shareable profile at `/u/[username]`
 - **Badge Generator**: Dynamic SVG badges for embedding in README files
+- **GitLab Scopes**: The app requests `read_user` and `read_api` scopes for full functionality
 
 ## 👤 Author
 

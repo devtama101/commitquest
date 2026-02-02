@@ -12,11 +12,11 @@ A gamified Git commit tracker that turns your coding journey into an epic advent
 ### 🔐 Authentication
 - **Email/Password** - Create an account with just email and password
 - **GitHub OAuth** - One-click login with GitHub
-- **GitLab OAuth** - One-click login with GitLab
+- **GitLab OAuth** - One-click login with GitLab (with `read_api` scope for repo access)
 
 ### 🎮 Gamification
 - **XP & Leveling System** - Earn XP for every commit, unlock titles as you level up
-- **Achievements** - Unlock badges for streaks, milestones, and special feats
+- **13 Achievements** - Unlock badges for streaks, milestones, and special feats
 - **Daily & Weekly Challenges** - Complete challenges to earn bonus XP
 - **20+ Level Titles** - From "Code Novice" to "Commit God"
 
@@ -41,14 +41,14 @@ A gamified Git commit tracker that turns your coding journey into an epic advent
 
 | Technology | Version |
 |------------|---------|
-| **Framework** | Next.js 15 (App Router) |
-| **React** | 19 |
+| **Framework** | Next.js 15.1 (App Router) |
+| **React** | 19.0 |
 | **Language** | TypeScript 5.x |
 | **Styling** | Tailwind CSS 4.0 |
 | **Database** | SQLite (dev) / PostgreSQL (prod) |
-| **ORM** | Prisma 6.x |
+| **ORM** | Prisma 6.1 |
 | **Auth** | Auth.js v5 (next-auth@5) |
-| **Charts** | Recharts 2.x |
+| **Charts** | Recharts 2.15 |
 
 ## 📦 Installation
 
@@ -61,7 +61,7 @@ A gamified Git commit tracker that turns your coding journey into an epic advent
 
 1. **Clone and install**
    ```bash
-   git clone https://github.com/your-username/commitquest.git
+   git clone https://github.com/devtama101/commitquest.git
    cd commitquest
    npm install
    ```
@@ -98,6 +98,7 @@ A gamified Git commit tracker that turns your coding journey into an epic advent
    ```bash
    npx prisma generate
    npx prisma db push
+   npm run db:seed
    ```
 
 4. **Run development server**
@@ -125,7 +126,7 @@ A gamified Git commit tracker that turns your coding journey into an epic advent
    - **Name**: CommitQuest
    - **Redirect URI**: `http://localhost:3000/api/auth/callback/gitlab`
 4. Check **Confidential** (this is correct for server-side apps)
-5. Check scopes: `api`, `read_user`, `read_repository`
+5. **Important**: The app automatically requests `read_user` and `read_api` scopes
 6. Copy Application ID and Secret to `.env`
 
 ## 📁 Project Structure
@@ -135,8 +136,9 @@ commitquest/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── api/               # API routes
-│   │   │   ├── auth/          # Authentication endpoints
 │   │   │   ├── achievements/  # Achievement endpoints
+│   │   │   ├── auth/          # Authentication endpoints
+│   │   │   ├── badge/         # SVG badge generator
 │   │   │   ├── challenges/    # Challenge endpoints
 │   │   │   ├── commits/       # Commit endpoints
 │   │   │   ├── insights/      # Analytics endpoints
@@ -144,6 +146,7 @@ commitquest/
 │   │   │   ├── repos/         # Repository management
 │   │   │   ├── settings/      # Account settings
 │   │   │   ├── stats/         # User statistics
+│   │   │   ├── sync/          # Manual sync
 │   │   │   ├── webhooks/      # GitHub/GitLab webhooks
 │   │   │   └── xp/            # XP & leveling
 │   │   ├── dashboard/         # Dashboard page
@@ -151,13 +154,18 @@ commitquest/
 │   │   ├── challenges/        # Challenges page
 │   │   ├── insights/          # Insights page
 │   │   ├── repos/             # Repositories page
-│   │   └── settings/          # Settings page
+│   │   ├── settings/          # Settings page
+│   │   ├── icon.svg           # Favicon
+│   │   ├── favicon.ico        # Favicon
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Landing page
 │   ├── components/
 │   │   ├── achievements/      # Achievement components
 │   │   ├── challenges/        # Challenge components
 │   │   ├── dashboard/         # Dashboard components
 │   │   ├── insights/          # Analytics charts
 │   │   ├── layout/            # Navbar, Footer
+│   │   ├── profile/           # Public profile components
 │   │   ├── repos/             # Repository components
 │   │   ├── settings/          # Settings components
 │   │   └── ui/                # UI components
@@ -165,12 +173,15 @@ commitquest/
 │       ├── achievements.ts    # Achievement logic
 │       ├── auth.ts            # Auth configuration
 │       ├── challenges.ts      # Challenge generation
+│       ├── token-refresh.ts   # GitLab token refresh
+│       ├── webhooks.ts        # Webhook handlers
 │       ├── xp.ts              # XP & leveling system
-│       ├── prisma.ts          # Prisma client
-│       └── webhooks.ts        # Webhook handlers
+│       └── prisma.ts          # Prisma client
 ├── prisma/
 │   ├── schema.prisma          # Database schema
-│   └── dev.db                # SQLite database (local)
+│   └── seed.ts               # Seed data
+├── Dockerfile                 # Docker config for production
+├── docker-compose.yml         # Docker compose for VPS
 └── package.json
 ```
 
@@ -202,21 +213,37 @@ Unlock titles as you level up:
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### Production Instance
+- **URL**: https://commitquest.webartisan.id
+- **Stack**: Docker + PostgreSQL + Caddy (auto SSL)
+- **CI/CD**: GitHub Actions (auto-deploy on push to `main`)
 
-1. Push code to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Add environment variables (use PostgreSQL for production)
-4. Deploy!
+### Manual Deployment to VPS
+
+```bash
+# SSH into VPS
+ssh webartisan
+
+# Pull latest and restart
+cd ~/commitquest && ./deploy.sh
+```
+
+Or from local machine:
+```bash
+git push origin main
+# GitHub Actions will auto-deploy in ~3-4 minutes
+```
 
 ### Environment Variables for Production
 
 ```env
-DATABASE_URL="postgresql://user:password@host:5432/database"
+DATABASE_URL="postgresql://postgres:password@postgres:5432/commitquest"
 AUTH_SECRET="your-production-secret"
 AUTH_URL="https://your-domain.com"
 WEBHOOK_BASE_URL="https://your-domain.com"
 ```
+
+See `DEPLOYMENT.md` for detailed deployment instructions.
 
 ## 📜 License
 
@@ -224,4 +251,4 @@ MIT License - feel free to use this for your own projects!
 
 ---
 
-Made with ☕ and 🔥
+Made with ☕ and 🔥 by [Tama](https://github.com/devtama101)
