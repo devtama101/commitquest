@@ -1,0 +1,64 @@
+services:
+  app:
+    image: ghcr.io/devtama101/commitquest:latest
+    container_name: commitquest-app
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/commitquest
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=${APP_URL}
+      - WEBHOOK_BASE_URL=${APP_URL}
+      - AUTH_GITHUB_ID=${AUTH_GITHUB_ID}
+      - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET}
+      - AUTH_GITLAB_ID=${AUTH_GITLAB_ID}
+      - AUTH_GITLAB_SECRET=${AUTH_GITLAB_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - commitquest-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: commitquest-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=commitquest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d commitquest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - commitquest-network
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: commitquest-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+    depends_on:
+      - app
+    networks:
+      - commitquest-network
+
+volumes:
+  postgres-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  commitquest-network:
+    driver: bridge

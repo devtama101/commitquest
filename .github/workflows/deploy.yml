@@ -1,0 +1,163 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: vps-webartisan
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v2.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            # Create project directory if it doesn't exist
+            mkdir -p ~/commitquest
+            cd ~/commitquest
+
+            # Create docker-compose.yml if it doesn't exist
+            cat > docker-compose.yml << 'EOF'
+            services:
+              app:
+                image: ghcr.io/devtama101/commitquest:latest
+                container_name: commitquest-app
+                restart: unless-stopped
+                environment:
+                  - DATABASE_URL=postgresql://postgres:$\{POSTGRES_PASSWORD\}@postgres:5432/commitquest
+                  - AUTH_SECRET=$\{AUTH_SECRET\}
+                  - AUTH_URL=$\{APP_URL\}
+                  - WEBHOOK_BASE_URL=$\{APP_URL\}
+                  - AUTH_GITHUB_ID=$\{AUTH_GITHUB_ID\}
+                  - AUTH_GITHUB_SECRET=$\{AUTH_GITHUB_SECRET\}
+                  - AUTH_GITLAB_ID=$\{AUTH_GITLAB_ID\}
+                  - AUTH_GITLAB_SECRET=$\{AUTH_GITLAB_SECRET\}
+                depends_on:
+                  postgres:
+                    condition: service_healthy
+                networks:
+                  - commitquest-network
+
+              postgres:
+                image: postgres:16-alpine
+                container_name: commitquest-postgres
+                restart: unless-stopped
+                environment:
+                  - POSTGRES_USER=postgres
+                  - POSTGRES_PASSWORD=$\{POSTGRES_PASSWORD\}
+                  - POSTGRES_DB=commitquest
+                volumes:
+                  - postgres-data:/var/lib/postgresql/data
+                healthcheck:
+                  test: ["CMD-SHELL", "pg_isready -U postgres -d commitquest"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+                networks:
+                  - commitquest-network
+
+              caddy:
+                image: caddy:2-alpine
+                container_name: commitquest-caddy
+                restart: unless-stopped
+                ports:
+                  - "80:80"
+                  - "443:443"
+                command: caddy reverse-proxy --from $\{DOMAIN\} --to app:3000
+                depends_on:
+                  - app
+                networks:
+                  - commitquest-network
+
+            volumes:
+              postgres-data:
+            networks:
+              commitquest-network:
+                driver: bridge
+            EOF
+
+            # Create .env file
+            cat > .env << EOF
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            APP_URL=${{ secrets.APP_URL }}
+            DOMAIN=${{ secrets.DOMAIN }}
+            AUTH_GITHUB_ID=${{ secrets.AUTH_GITHUB_ID }}
+            AUTH_GITHUB_SECRET=${{ secrets.AUTH_GITHUB_SECRET }}
+            AUTH_GITLAB_ID=${{ secrets.AUTH_GITLAB_ID }}
+            AUTH_GITLAB_SECRET=${{ secrets.AUTH_GITLAB_SECRET }}
+            EOF
+
+            # Pull latest images
+            docker-compose pull
+
+            # Run database migrations
+            docker-compose run --rm app npx prisma migrate deploy
+
+            # Restart services
+            docker-compose up -d
+
+            # Remove old images
+            docker image prune -af --filter "until=24h"
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f ${{ secrets.APP_URL }} || exit 1
