@@ -35,10 +35,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modul
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy public folder if it exists
-RUN --mount=type=bind,from=builder,source=/app/public,target=/tmp-public,target-if-exists \
-    && cp -r /tmp-public ./public || true
-
 USER nextjs
 
 EXPOSE 3000
