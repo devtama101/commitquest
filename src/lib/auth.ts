@@ -15,8 +15,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitLab({
       clientId: process.env.AUTH_GITLAB_ID!,
       clientSecret: process.env.AUTH_GITLAB_SECRET!,
-      // Add read_api scope for fetching projects
-      scope: "read_api",
     }),
     Credentials({
       name: "credentials",
