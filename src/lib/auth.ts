@@ -66,9 +66,63 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.provider = account.provider;
       }
       if (user) {
-        token.sub = user.id;
+        token.email = user.email;
       }
       return token;
+    },
+    async signIn({ user, account }) {
+      if (!user || !account) return true;
+
+      const userEmail = user.email;
+      if (!userEmail) return true;
+
+      // Find or create user
+      let dbUser = await prisma.user.findUnique({
+        where: { email: userEmail },
+      });
+
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            email: userEmail,
+            name: user.name,
+            image: user.image,
+          },
+        });
+      }
+
+      // Set the user ID to the database user's ID
+      user.id = dbUser.id;
+
+      // Create account record if it doesn't exist
+      if (account.providerAccountId) {
+        const existingAccount = await prisma.account.findFirst({
+          where: {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          },
+        });
+
+        if (!existingAccount) {
+          await prisma.account.create({
+            data: {
+              userId: dbUser.id,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              type: account.type ?? "oauth",
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: account.session_state,
+            },
+          });
+        }
+      }
+
+      return true;
     },
   },
   pages: {

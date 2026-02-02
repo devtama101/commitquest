@@ -37,16 +37,23 @@ export function ClientNavbar() {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                href={link.href}
-                className="font-body font-bold text-dark hover:text-orange transition-colors text-lg"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  className={`font-body font-bold transition-colors text-lg ${
+                    isActive
+                      ? "text-orange"
+                      : "text-dark hover:text-orange"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-4">
@@ -88,17 +95,24 @@ export function ClientNavbar() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t-4 border-dark bg-cream">
           <ul className="py-4 space-y-4">
-            {navLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  href={link.href}
-                  className="block font-body font-bold text-dark hover:text-orange transition-colors text-lg px-4 py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className={`block font-body font-bold transition-colors text-lg px-4 py-2 ${
+                      isActive
+                        ? "text-orange"
+                        : "text-dark hover:text-orange"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              );
+            })}
             {session?.user && (
               <li className="px-4 md:hidden">
                 <SignOutButton />
