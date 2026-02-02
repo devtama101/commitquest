@@ -115,7 +115,7 @@ export function CommitCalendar() {
               {week.map((day) => (
                 <div
                   key={day.date}
-                  className={`aspect-square rounded-sm border border-dark/10 ${levelColors[getLevel(day.count)]} cursor-pointer hover:scale-125 hover:z-10 hover:border-2 hover:border-dark transition-transform relative`}
+                  className={`aspect-square rounded-sm border border-dark/10 ${levelColors[getLevel(day.count)]} cursor-pointer hover:scale-125 hover:border-2 hover:border-dark transition-transform relative`}
                   onMouseEnter={(e) => handleMouseEnter(day, e)}
                   onMouseLeave={handleMouseLeave}
                 />
