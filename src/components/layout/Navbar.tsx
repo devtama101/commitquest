@@ -25,7 +25,7 @@ export function Navbar() {
       ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-cream border-b-3 border-dark py-3 px-6 md:px-12">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-cream border-b-3 border-dark py-3 px-6 md:px-12">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="font-display text-2xl md:text-3xl text-orange text-shadow-sm tracking-wider">
           Commit<span className="text-teal">Quest</span>

@@ -30,7 +30,7 @@ export function AchievementToast({ icon, name, rarity, onClose }: AchievementToa
 
   return (
     <div
-      className={`fixed top-24 right-6 z-[100] transition-all duration-300 ${
+      className={`fixed top-24 right-6 z-[999] transition-all duration-300 ${
         isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
       }`}
     >

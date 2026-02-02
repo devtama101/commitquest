@@ -433,8 +433,8 @@ function AddRepoModal({ onRepoAdded, needsReauth }: { onRepoAdded: () => void | 
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark/50 pointer-events-none">
-      <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col pointer-events-auto">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-dark/50 pointer-events-none">
+      <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col pointer-events-auto relative z-[999]">
         <div className="p-6 border-b-4 border-dark">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-display text-2xl text-dark">Track a Repository</h2>

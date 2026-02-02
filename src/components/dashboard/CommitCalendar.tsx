@@ -132,7 +132,7 @@ export function CommitCalendar() {
       {/* Custom Tooltip */}
       {hoveredDay && (
         <div
-          className="fixed z-[100] pointer-events-none bg-dark text-white px-3 py-2 rounded-lg border-2 border-orange shadow-[4px_4px_0_var(--color-dark)] text-sm font-body"
+          className="fixed z-[999] pointer-events-none bg-dark text-white px-3 py-2 rounded-lg border-2 border-orange shadow-[4px_4px_0_var(--color-dark)] text-sm font-body"
           style={{
             left: `${tooltipPosition.x + 10}px`,
             top: `${tooltipPosition.y - 40}px`,

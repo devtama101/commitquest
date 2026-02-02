@@ -52,8 +52,8 @@ export function ConfirmModal({
   const { icon, btnClass } = getVariantStyles();
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-dark/50 pointer-events-none">
-      <div className="bg-cream border-4 border-dark rounded-2xl p-6 max-w-md w-full shadow-lg pointer-events-auto">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-dark/50 pointer-events-none">
+      <div className="bg-cream border-4 border-dark rounded-2xl p-6 max-w-md w-full shadow-lg pointer-events-auto relative z-[999]">
         {/* Icon */}
         <div className="text-center mb-4">
           <span className="text-5xl">{icon}</span>
